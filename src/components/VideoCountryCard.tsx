@@ -16,6 +16,7 @@ const VideoCountryCard = ({ country, index }: VideoCountryCardProps) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [videoError, setVideoError] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -33,14 +34,14 @@ const VideoCountryCard = ({ country, index }: VideoCountryCardProps) => {
   }, []);
 
   useEffect(() => {
-    if (videoRef.current) {
+    if (videoRef.current && !videoError) {
       if (isVisible || isHovered) {
-        videoRef.current.play().catch(() => {});
+        videoRef.current.play().catch(() => setVideoError(true));
       } else {
         videoRef.current.pause();
       }
     }
-  }, [isVisible, isHovered]);
+  }, [isVisible, isHovered, videoError]);
 
   return (
     <motion.div
@@ -56,15 +57,24 @@ const VideoCountryCard = ({ country, index }: VideoCountryCardProps) => {
           onMouseLeave={() => setIsHovered(false)}
           className="group relative h-[400px] rounded-2xl overflow-hidden cursor-pointer shadow-xl hover:shadow-2xl transition-all duration-500"
         >
-          {/* Video Background */}
-          <video
-            ref={videoRef}
-            src={country.videoUrl}
-            muted
-            loop
-            playsInline
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-          />
+          {/* Background - Video or Image Fallback */}
+          {!videoError ? (
+            <video
+              ref={videoRef}
+              src={country.videoUrl}
+              muted
+              loop
+              playsInline
+              onError={() => setVideoError(true)}
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            />
+          ) : (
+            <img
+              src={country.imageUrl}
+              alt={country.name}
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            />
+          )}
 
           {/* Overlay - dims by default, lights up on hover */}
           <div className={`absolute inset-0 transition-all duration-500 ${

@@ -106,10 +106,10 @@ const CountrySidebar = ({ country }: CountrySidebarProps) => {
 
         <div className="mt-6 pt-6 border-t border-white/10">
           <div className="flex items-center gap-3 text-sm">
-            <Phone className="w-4 h-4 text-gold" />
+            <Phone className="w-4 h-4 text-amber-500" />
             <span className="text-white/70">Or call us:</span>
-            <a href="tel:+611234567890" className="text-gold font-semibold hover:underline">
-              +61 1234 567 890
+            <a href="tel:+919588584208" className="text-amber-500 font-semibold hover:underline">
+              +91 95885 84208
             </a>
           </div>
         </div>
@@ -181,7 +181,7 @@ const CountrySidebar = ({ country }: CountrySidebarProps) => {
           Our immigration experts are available 24/7 for urgent queries.
         </p>
         <a
-          href="tel:+611234567890"
+          href="tel:+919588584208"
           className="flex items-center justify-center gap-2 bg-slate-900 text-white font-semibold py-3 rounded-lg hover:bg-slate-800 transition-colors"
         >
           <Phone className="w-4 h-4" />

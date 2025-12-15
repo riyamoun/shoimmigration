@@ -3,21 +3,59 @@
 import { motion } from 'framer-motion';
 import { Send, Phone, Mail, MapPin } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 const LeadForm = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
-    country: '',
+    targetCountry: '',
     visaType: '',
     message: '',
   });
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    alert('Thank you! We will contact you within 24 hours.');
+    setLoading(true);
+
+    try {
+      const response = await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          targetCountry: formData.targetCountry,
+          visaType: formData.visaType,
+          message: formData.message,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        toast.error(data.error || 'Failed to submit application');
+        return;
+      }
+
+      toast.success(data.message || 'Thank you! We will contact you within 24 hours.');
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        targetCountry: '',
+        visaType: '',
+        message: '',
+      });
+    } catch (error) {
+      toast.error('Something went wrong. Please try again.');
+      console.error('Form submission error:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -31,10 +69,10 @@ const LeadForm = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            <span className="text-amber-500 font-semibold text-sm uppercase tracking-wider">Get In Touch</span>
+            <span className="text-gold font-semibold text-sm uppercase tracking-wider">Get In Touch</span>
             <h2 className="font-serif text-4xl md:text-5xl font-bold text-slate-900 mt-3 mb-6">
               Start Your{' '}
-              <span className="text-amber-500">Journey Today</span>
+              <span className="text-gold">Journey Today</span>
             </h2>
             <p className="text-slate-600 text-lg mb-10 leading-relaxed">
               Ready to take the first step towards your new life? Fill out the form for a free 
@@ -45,36 +83,31 @@ const LeadForm = () => {
             <div className="space-y-6">
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 bg-slate-900 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <Phone className="w-5 h-5 text-amber-500" />
+                  <Phone className="w-5 h-5 text-gold" />
                 </div>
                 <div>
                   <h4 className="font-semibold text-slate-900">Call Us</h4>
-                  <a href="tel:+919588584208" className="text-slate-600 hover:text-amber-500 transition-colors">
-                    +91 95885 84208
-                  </a>
+                  <p className="text-slate-600">+61 2 1234 5678</p>
                 </div>
               </div>
 
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 bg-slate-900 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <Mail className="w-5 h-5 text-amber-500" />
+                  <Mail className="w-5 h-5 text-gold" />
                 </div>
                 <div>
                   <h4 className="font-semibold text-slate-900">Email Us</h4>
-                  <a href="mailto:info@shoimmigration.com" className="text-slate-600 hover:text-amber-500 transition-colors">
-                    info@shoimmigration.com
-                  </a>
+                  <p className="text-slate-600">info@shoimmigration.com</p>
                 </div>
               </div>
 
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 bg-slate-900 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <MapPin className="w-5 h-5 text-amber-500" />
+                  <MapPin className="w-5 h-5 text-gold" />
                 </div>
                 <div>
                   <h4 className="font-semibold text-slate-900">Visit Us</h4>
-                  <p className="text-amber-600 font-semibold">GOABRO SHO PVT. LTD.</p>
-                  <p className="text-slate-600">Kath Mandi, Meham, Rohtak, Haryana, India - 124112</p>
+                  <p className="text-slate-600">123 Immigration Street, Sydney NSW 2000</p>
                 </div>
               </div>
             </div>
@@ -119,7 +152,7 @@ const LeadForm = () => {
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 outline-none transition-all"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-gold focus:ring-2 focus:ring-gold/20 outline-none transition-all"
                     placeholder="John Doe"
                   />
                 </div>
@@ -133,7 +166,7 @@ const LeadForm = () => {
                       required
                       value={formData.email}
                       onChange={(e) => setFormData({...formData, email: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 outline-none transition-all"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-gold focus:ring-2 focus:ring-gold/20 outline-none transition-all"
                       placeholder="john@example.com"
                     />
                   </div>
@@ -144,8 +177,8 @@ const LeadForm = () => {
                       required
                       value={formData.phone}
                       onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 outline-none transition-all"
-                      placeholder="+91 xxx xxx xxxx"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-gold focus:ring-2 focus:ring-gold/20 outline-none transition-all"
+                      placeholder="+61 xxx xxx xxx"
                     />
                   </div>
                 </div>
@@ -156,19 +189,16 @@ const LeadForm = () => {
                     <label className="block text-sm font-medium text-slate-700 mb-2">Target Country</label>
                     <select
                       required
-                      value={formData.country}
-                      onChange={(e) => setFormData({...formData, country: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 outline-none transition-all bg-white"
+                      value={formData.targetCountry}
+                      onChange={(e) => setFormData({...formData, targetCountry: e.target.value})}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-gold focus:ring-2 focus:ring-gold/20 outline-none transition-all bg-white"
                     >
                       <option value="">Select Country</option>
-                      <option value="australia">Australia</option>
-                      <option value="canada">Canada</option>
-                      <option value="uk">United Kingdom</option>
-                      <option value="usa">United States</option>
+                      <option value="Australia">Australia</option>
+                      <option value="Canada">Canada</option>
+                      <option value="United Kingdom">United Kingdom</option>
+                      <option value="United States">United States</option>
                       <option value="newzealand">New Zealand</option>
-                      <option value="germany">Germany</option>
-                      <option value="uae">UAE</option>
-                      <option value="singapore">Singapore</option>
                     </select>
                   </div>
                   <div>
@@ -177,7 +207,7 @@ const LeadForm = () => {
                       required
                       value={formData.visaType}
                       onChange={(e) => setFormData({...formData, visaType: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 outline-none transition-all bg-white"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-gold focus:ring-2 focus:ring-gold/20 outline-none transition-all bg-white"
                     >
                       <option value="">Select Visa Type</option>
                       <option value="student">Student Visa</option>
@@ -196,7 +226,7 @@ const LeadForm = () => {
                     rows={4}
                     value={formData.message}
                     onChange={(e) => setFormData({...formData, message: e.target.value})}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 outline-none transition-all resize-none"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-gold focus:ring-2 focus:ring-gold/20 outline-none transition-all resize-none"
                     placeholder="Tell us about your situation..."
                   />
                 </div>
@@ -204,15 +234,16 @@ const LeadForm = () => {
                 {/* Submit */}
                 <button
                   type="submit"
-                  className="w-full bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-4 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/25 flex items-center justify-center gap-2 group"
+                  disabled={loading}
+                  className="w-full bg-gold hover:bg-gold-dark text-slate-900 font-bold py-4 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-gold/25 flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Get Free Assessment
+                  {loading ? 'Processing...' : 'Get Free Assessment'}
                   <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>
 
               <p className="text-xs text-slate-500 text-center mt-4">
-                By submitting, you agree to our Privacy Policy. We&apos;ll respond within 24 hours.
+                By submitting, you agree to our Privacy Policy. We'll respond within 24 hours.
               </p>
             </form>
           </motion.div>

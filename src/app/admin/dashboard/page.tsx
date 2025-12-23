@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Search, Download, RefreshCw } from 'lucide-react';
 
 interface Lead {
   id: string;
@@ -24,6 +25,53 @@ export default function AdminDashboard() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('ALL');
+  const [countryFilter, setCountryFilter] = useState<string>('ALL');
+
+  // Get unique countries for filter dropdown
+  const uniqueCountries = useMemo(() => {
+    return [...new Set(leads.map(l => l.targetCountry))].sort();
+  }, [leads]);
+
+  // Filtered leads based on search and filters
+  const filteredLeads = useMemo(() => {
+    return leads.filter(lead => {
+      const matchesSearch = searchQuery === '' || 
+        lead.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        lead.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        lead.phone.includes(searchQuery);
+      
+      const matchesStatus = statusFilter === 'ALL' || lead.status === statusFilter;
+      const matchesCountry = countryFilter === 'ALL' || lead.targetCountry === countryFilter;
+      
+      return matchesSearch && matchesStatus && matchesCountry;
+    });
+  }, [leads, searchQuery, statusFilter, countryFilter]);
+
+  // Export to CSV function
+  const exportToCSV = () => {
+    const headers = ['Name', 'Email', 'Phone', 'Visa Type', 'Country', 'Status', 'Date', 'Message'];
+    const csvContent = [
+      headers.join(','),
+      ...filteredLeads.map(lead => [
+        `"${lead.name}"`,
+        lead.email,
+        lead.phone,
+        lead.visaType,
+        lead.targetCountry,
+        lead.status,
+        new Date(lead.createdAt).toISOString(),
+        `"${lead.message || ''}"`,
+      ].join(','))
+    ].join('\n');
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `leads_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+  };
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -111,9 +159,27 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-slate-50 p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-navy mb-2">Admin Dashboard</h1>
-          <p className="text-gray-600">Total Leads: {leads.length}</p>
+        <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-4xl font-bold text-navy mb-2">Admin Dashboard</h1>
+            <p className="text-gray-600">Total Leads: {leads.length} | Showing: {filteredLeads.length}</p>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={fetchLeads}
+              className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Refresh
+            </button>
+            <button
+              onClick={exportToCSV}
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+            >
+              <Download className="w-4 h-4" />
+              Export CSV
+            </button>
+          </div>
         </div>
 
         {error && (
@@ -172,11 +238,49 @@ export default function AdminDashboard() {
         {/* Leads Table */}
         <Card>
           <CardHeader>
-            <CardTitle>Recent Leads</CardTitle>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <CardTitle>Recent Leads</CardTitle>
+              <div className="flex flex-col sm:flex-row gap-3">
+                {/* Search */}
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Input
+                    placeholder="Search name, email, phone..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 w-full sm:w-64"
+                  />
+                </div>
+                {/* Status Filter */}
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-gold"
+                >
+                  <option value="ALL">All Status</option>
+                  <option value="PENDING">Pending</option>
+                  <option value="CONTACTED">Contacted</option>
+                  <option value="CLOSED">Closed</option>
+                </select>
+                {/* Country Filter */}
+                <select
+                  value={countryFilter}
+                  onChange={(e) => setCountryFilter(e.target.value)}
+                  className="px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-gold"
+                >
+                  <option value="ALL">All Countries</option>
+                  {uniqueCountries.map(country => (
+                    <option key={country} value={country}>{country}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
-            {leads.length === 0 ? (
-              <p className="text-gray-600 text-center py-8">No leads yet</p>
+            {filteredLeads.length === 0 ? (
+              <p className="text-gray-600 text-center py-8">
+                {leads.length === 0 ? 'No leads yet' : 'No leads match your filters'}
+              </p>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
@@ -192,7 +296,7 @@ export default function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {leads.map((lead) => (
+                    {filteredLeads.map((lead) => (
                       <tr key={lead.id} className="border-b hover:bg-gray-50">
                         <td className="py-3 px-4">{lead.name}</td>
                         <td className="py-3 px-4 text-blue-600">{lead.email}</td>

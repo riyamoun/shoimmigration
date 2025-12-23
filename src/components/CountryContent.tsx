@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from 'framer-motion';
-import { CheckCircle2, FileText, DollarSign, Clock, Award, ChevronRight } from 'lucide-react';
+import { CheckCircle2, FileText, Clock, Award, ChevronRight } from 'lucide-react';
 import { CountryData } from '@/data/countries';
 
 interface CountryContentProps {
@@ -193,48 +193,6 @@ const CountryContent = ({ country }: CountryContentProps) => {
               </div>
             </motion.div>
           ))}
-        </div>
-      </motion.section>
-
-      {/* Fees Section */}
-      <motion.section
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        id="fees"
-      >
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 bg-gold/10 rounded-xl flex items-center justify-center">
-            <DollarSign className="w-6 h-6 text-gold" />
-          </div>
-          <h2 className="font-serif text-3xl font-bold text-slate-900">Visa Fees</h2>
-        </div>
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-slate-900 text-white">
-              <tr>
-                <th className="px-6 py-4 text-left font-semibold">Fee Type</th>
-                <th className="px-6 py-4 text-right font-semibold">Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              {country.detailedContent.fees.map((fee, idx) => (
-                <tr 
-                  key={idx}
-                  className={`border-b border-slate-100 ${idx % 2 === 0 ? 'bg-slate-50' : 'bg-white'}`}
-                >
-                  <td className="px-6 py-4 text-slate-700">{fee.type}</td>
-                  <td className="px-6 py-4 text-right font-bold text-gold">{fee.amount}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <div className="p-4 bg-gold/5 border-t border-gold/20">
-            <p className="text-sm text-slate-600">
-              <strong>Note:</strong> Fees are subject to change. Contact us for the latest fee structure.
-            </p>
-          </div>
         </div>
       </motion.section>
 

@@ -16,10 +16,6 @@ export interface CountryData {
     eligibility: string[];
     process: string[];
     documents: string[];
-    fees: {
-      type: string;
-      amount: string;
-    }[];
     processingTime: string;
     pointsTable?: {
       factor: string;
@@ -76,7 +72,6 @@ Canada's economy is diverse and growing, with particularly strong sectors in tec
         "Education: Minimum high school diploma (higher education preferred)",
         "Language: CLB 7 or higher in English/French (IELTS, CELPIP, TEF)",
         "Work Experience: Minimum 1 year skilled work experience (NOC 0, A, B)",
-        "Proof of Funds: CAD $13,310 for single applicant (2024)",
         "Medical Clearance: Pass immigration medical examination",
         "Security Clearance: No criminal record",
         "Genuine intention to reside in Canada"
@@ -104,13 +99,6 @@ Canada's economy is diverse and growing, with particularly strong sectors in tec
         "Photographs as per specifications",
         "Marriage certificate (if applicable)",
         "Birth certificates for dependents"
-      ],
-      fees: [
-        { type: "Principal Applicant", amount: "CAD $1,365" },
-        { type: "Spouse/Partner", amount: "CAD $1,365" },
-        { type: "Dependent Child", amount: "CAD $230" },
-        { type: "Right of PR Fee", amount: "CAD $515" },
-        { type: "Biometrics", amount: "CAD $85" }
       ],
       processingTime: "6-12 months for Express Entry",
       pointsTable: [
@@ -206,13 +194,6 @@ Australia has one of the strongest economies in the Asia-Pacific region, with bo
         "Proof of relationship (if applicable)",
         "State nomination (for 190/491)"
       ],
-      fees: [
-        { type: "Subclass 189 (Principal)", amount: "AUD $4,640" },
-        { type: "Partner/Spouse", amount: "AUD $2,320" },
-        { type: "Child under 18", amount: "AUD $1,160" },
-        { type: "Skills Assessment", amount: "AUD $400-1,500" },
-        { type: "English Test", amount: "AUD $350-400" }
-      ],
       processingTime: "8-18 months depending on visa subclass",
       pointsTable: [
         { factor: "Age (25-32 years)", maxPoints: "30", description: "Optimal age range" },
@@ -298,12 +279,6 @@ The Skilled Migrant Category (SMC) is New Zealand's primary pathway for skilled 
         "Police certificates",
         "Medical certificates"
       ],
-      fees: [
-        { type: "EOI Fee", amount: "NZD $680" },
-        { type: "Residence Application", amount: "NZD $4,290" },
-        { type: "Partner", amount: "NZD $2,030" },
-        { type: "Dependent Child", amount: "NZD $1,220" }
-      ],
       processingTime: "3-9 months"
     },
     subLinks: [
@@ -369,12 +344,6 @@ Post-Brexit, the UK has introduced a points-based immigration system that priori
         "Bank statements",
         "TB test results (if applicable)",
         "Criminal record certificate"
-      ],
-      fees: [
-        { type: "Skilled Worker (up to 3 years)", amount: "£719" },
-        { type: "Skilled Worker (over 3 years)", amount: "£1,420" },
-        { type: "Immigration Health Surcharge", amount: "£1,035/year" },
-        { type: "Priority Service", amount: "£500" }
       ],
       processingTime: "3 weeks (standard), 5 days (priority)"
     },
@@ -443,12 +412,6 @@ Immigration to the US can be complex, with multiple visa categories for temporar
         "Employment verification",
         "DS-160 confirmation"
       ],
-      fees: [
-        { type: "H-1B Petition", amount: "$460" },
-        { type: "H-1B Visa Fee", amount: "$190" },
-        { type: "USCIS Premium Processing", amount: "$2,805" },
-        { type: "EB Green Card", amount: "$700+" }
-      ],
       processingTime: "3-12 months (H-1B), 1-5 years (Green Card)"
     },
     subLinks: [
@@ -516,12 +479,6 @@ Recent visa reforms have made the UAE more accessible than ever, with long-term 
         "Medical fitness certificate",
         "Emirates ID application"
       ],
-      fees: [
-        { type: "Employment Visa", amount: "AED 2,000-5,000" },
-        { type: "Emirates ID", amount: "AED 370" },
-        { type: "Medical Test", amount: "AED 300" },
-        { type: "Golden Visa (10 years)", amount: "AED 2,800" }
-      ],
       processingTime: "2-4 weeks standard"
     },
     subLinks: [
@@ -586,11 +543,6 @@ The new Opportunity Card (Chancenkarte) and Skilled Immigration Act have made Ge
         "Health insurance proof",
         "Proof of accommodation"
       ],
-      fees: [
-        { type: "National Visa", amount: "€75" },
-        { type: "Residence Permit", amount: "€100" },
-        { type: "EU Blue Card", amount: "€100" }
-      ],
       processingTime: "1-3 months"
     },
     subLinks: [
@@ -653,11 +605,6 @@ The Employment Pass (EP) is the main work visa for foreign professionals, while 
         "Passport-size photo",
         "Company documents"
       ],
-      fees: [
-        { type: "Employment Pass", amount: "SGD $225" },
-        { type: "S Pass", amount: "SGD $100" },
-        { type: "Card Issuance", amount: "SGD $225" }
-      ],
       processingTime: "3-8 weeks"
     },
     subLinks: [
@@ -719,10 +666,6 @@ The General Employment Policy (GEP) and Top Talent Pass Scheme (TTPS) are the ma
         "Employment contract",
         "Company sponsorship letter",
         "Financial proof"
-      ],
-      fees: [
-        { type: "Employment Visa", amount: "HKD $230" },
-        { type: "Top Talent Pass", amount: "HKD $230" }
       ],
       processingTime: "4-6 weeks"
     },

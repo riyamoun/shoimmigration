@@ -53,6 +53,9 @@ function LoginForm() {
         <Label htmlFor="password">Password</Label>
         <Input id="password" type="password" value={password} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)} required />
       </div>
+      <div className="text-right">
+        <a href="/forgot-password" className="text-sm text-gold hover:underline">Forgot password?</a>
+      </div>
       <Button type="submit" className="w-full bg-gold text-slate-900 hover:bg-gold-dark" disabled={isLoading}>
         {isLoading ? "Logging in..." : "Log In"}
       </Button>

@@ -28,11 +28,45 @@ model Lead {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  name      String?
-  role      String   @default("AGENT") // ADMIN, AGENT
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                String    @id @default(cuid())
+  email             String    @unique
+  password          String
+  name              String?
+  role              String    @default("AGENT") // ADMIN, AGENT
+  resetToken        String?   @unique
+  resetTokenExpiry  DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  applications      Application[]
+}
+
+model Application {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  visaType        String
+  targetCountry   String
+  status          String   @default("SUBMITTED") // SUBMITTED, DOCUMENTS_PENDING, UNDER_REVIEW, LODGED, APPROVED, REJECTED
+  stage           Int      @default(1)
+  notes           String?
+  documents       Document[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+
+model Document {
+  id            String      @id @default(cuid())
+  applicationId String
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  name          String
+  type          String      // passport, educational, employment, etc.
+  url           String?
+  status        String      @default("PENDING") // PENDING, UPLOADED, VERIFIED, REJECTED
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([applicationId])
 }

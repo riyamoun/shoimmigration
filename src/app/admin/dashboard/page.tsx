@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { DashboardSkeleton } from '@/components/ui/skeleton';
 import { Search, Download, RefreshCw } from 'lucide-react';
 
 interface Lead {
@@ -146,13 +147,7 @@ export default function AdminDashboard() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-50 p-8">
-        <div className="text-center">
-          <p className="text-gray-600">Loading leads...</p>
-        </div>
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   return (

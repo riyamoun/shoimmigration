@@ -1,9 +1,10 @@
 "use client";
 
 import { motion } from 'framer-motion';
-import { Send, Phone, Mail, ExternalLink, Calendar, Bell } from 'lucide-react';
+import { Send, Phone, ExternalLink, Calendar, Bell, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { CountryData } from '@/data/countries';
+import { toast } from 'sonner';
 
 interface CountrySidebarProps {
   country: CountryData;
@@ -17,11 +18,46 @@ const CountrySidebar = ({ country }: CountrySidebarProps) => {
     visaType: '',
     message: '',
   });
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    alert('Thank you! Our expert will contact you within 24 hours.');
+    setLoading(true);
+
+    try {
+      const response = await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          visaType: formData.visaType,
+          targetCountry: country.name,
+          message: formData.message,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        toast.error(data.error || 'Failed to submit application');
+        return;
+      }
+
+      toast.success('Thank you! Our expert will contact you within 24 hours.');
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        visaType: '',
+        message: '',
+      });
+    } catch {
+      toast.error('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -97,10 +133,20 @@ const CountrySidebar = ({ country }: CountrySidebarProps) => {
           </div>
           <button
             type="submit"
-            className="w-full bg-gold hover:bg-gold-dark text-slate-900 font-bold py-4 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-gold/25 flex items-center justify-center gap-2 group"
+            disabled={loading}
+            className="w-full bg-gold hover:bg-gold-dark text-slate-900 font-bold py-4 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-gold/25 flex items-center justify-center gap-2 group disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            Get Free Assessment
-            <Send className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Submitting...
+              </>
+            ) : (
+              <>
+                Get Free Assessment
+                <Send className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </>
+            )}
           </button>
         </form>
 

@@ -2,6 +2,8 @@ import prisma from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { NextRequest, NextResponse } from 'next/server';
+import { leadSchema } from '@/lib/validations';
+import { sendLeadConfirmationEmail } from '@/lib/email';
 
 // Simple in-memory rate limiting (for production, use Redis or similar)
 const rateLimitMap = new Map<string, { count: number; lastReset: number }>();
@@ -40,24 +42,18 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     
-    // Validate required fields
-    const { name, email, phone, visaType, targetCountry, message } = body;
+    // Validate with Zod
+    const validationResult = leadSchema.safeParse(body);
     
-    if (!name || !email || !phone || !visaType || !targetCountry) {
+    if (!validationResult.success) {
+      const errors = validationResult.error.issues.map(e => e.message).join(', ');
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: errors },
         { status: 400 }
       );
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Invalid email format' },
-        { status: 400 }
-      );
-    }
+    const { name, email, phone, visaType, targetCountry, message } = validationResult.data;
 
     // Create lead in database
     const lead = await prisma.lead.create({
@@ -72,8 +68,15 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // TODO: Send email notification here (integrate Resend)
-    console.log(`New lead captured: ${lead.email}`);
+    // Send email notifications (non-blocking)
+    sendLeadConfirmationEmail({
+      name,
+      email,
+      phone,
+      visaType,
+      targetCountry,
+      message: message || undefined,
+    }).catch(err => console.error('Email send error:', err));
 
     return NextResponse.json(
       {

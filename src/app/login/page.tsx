@@ -3,6 +3,7 @@
 import { signIn } from "next-auth/react";
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -54,7 +55,7 @@ function LoginForm() {
         <Input id="password" type="password" value={password} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)} required />
       </div>
       <div className="text-right">
-        <a href="/forgot-password" className="text-sm text-gold hover:underline">Forgot password?</a>
+        <Link href="/forgot-password" className="text-sm text-gold hover:underline">Forgot password?</Link>
       </div>
       <Button type="submit" className="w-full bg-gold text-slate-900 hover:bg-gold-dark" disabled={isLoading}>
         {isLoading ? "Logging in..." : "Log In"}
@@ -73,7 +74,7 @@ export default function LoginPage() {
           <Suspense fallback={<div className="bg-white p-8 rounded-2xl shadow-lg animate-pulse h-64" />}>
             <LoginForm />
           </Suspense>
-          <p className="mt-4 text-center text-slate-600">Don&apos;t have an account? <a href="/register" className="text-gold font-semibold">Register</a></p>
+          <p className="mt-4 text-center text-slate-600">Don&apos;t have an account? <Link href="/register" className="text-gold font-semibold">Register</Link></p>
         </div>
       </section>
       <Footer />

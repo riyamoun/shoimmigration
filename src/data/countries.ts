@@ -213,6 +213,8 @@ Australia has one of the strongest economies in the Asia-Pacific region, with bo
       { name: "Skilled Independent (189)", slug: "subclass-189", description: "Points-tested permanent visa" },
       { name: "State Nominated (190)", slug: "subclass-190", description: "State-sponsored PR pathway" },
       { name: "Skilled Regional (491)", slug: "subclass-491", description: "Regional provisional visa" },
+      { name: "Visitor Visa (600)", slug: "subclass-600", description: "Tourism, business visits, or family visits" },
+      { name: "Temporary Skill Shortage (482)", slug: "subclass-482", description: "Employer-sponsored work visa for skilled workers" },
       { name: "Student Visa (500)", slug: "student-visa", description: "Study at Australian institutions" },
       { name: "Employer Sponsored", slug: "employer-sponsored", description: "Sponsored by Australian employer" },
       { name: "Partner Visa", slug: "partner-visa", description: "Join your partner in Australia" }

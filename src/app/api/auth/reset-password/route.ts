@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createHash } from "crypto";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
 import { resetPasswordSchema } from "@/lib/validations";
+
+// Hash the reset token to compare with stored hash
+function hashToken(token: string): string {
+  return createHash("sha256").update(token).digest("hex");
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,10 +26,13 @@ export async function POST(request: NextRequest) {
 
     const { token, password } = validationResult.data;
 
-    // Find user with valid token
+    // Hash the provided token to compare with database
+    const hashedToken = hashToken(token);
+
+    // Find user with valid hashed token
     const user = await prisma.user.findFirst({
       where: {
-        resetToken: token,
+        resetToken: hashedToken,
         resetTokenExpiry: {
           gt: new Date(),
         },

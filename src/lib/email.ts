@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { escapeHtml } from './sanitize';
 
 const resend = process.env.RESEND_API_KEY 
   ? new Resend(process.env.RESEND_API_KEY)
@@ -18,6 +19,16 @@ export async function sendLeadConfirmationEmail(data: LeadEmailData) {
     console.log('Resend not configured, skipping email');
     return { success: false, error: 'Email service not configured' };
   }
+
+  // Sanitize all user input to prevent XSS in emails
+  const sanitizedData = {
+    name: escapeHtml(data.name),
+    email: data.email,
+    phone: escapeHtml(data.phone),
+    visaType: escapeHtml(data.visaType),
+    targetCountry: escapeHtml(data.targetCountry),
+    message: data.message ? escapeHtml(data.message) : undefined,
+  };
 
   try {
     // Email to the lead (confirmation)
@@ -47,15 +58,15 @@ export async function sendLeadConfirmationEmail(data: LeadEmailData) {
               <p>Your Gateway to Global Opportunities</p>
             </div>
             <div class="content">
-              <h2>Thank You, ${data.name}!</h2>
-              <p>We have received your visa inquiry for <strong>${data.targetCountry}</strong>. Our expert migration agents will review your details and contact you within <strong>24 hours</strong>.</p>
+              <h2>Thank You, ${sanitizedData.name}!</h2>
+              <p>We have received your visa inquiry for <strong>${sanitizedData.targetCountry}</strong>. Our expert migration agents will review your details and contact you within <strong>24 hours</strong>.</p>
               
               <div class="highlight">
                 <h3 style="margin-top: 0;">Your Inquiry Details:</h3>
-                <p><strong>Destination:</strong> ${data.targetCountry}</p>
-                <p><strong>Visa Type:</strong> ${data.visaType}</p>
-                <p><strong>Phone:</strong> ${data.phone}</p>
-                ${data.message ? `<p><strong>Message:</strong> ${data.message}</p>` : ''}
+                <p><strong>Destination:</strong> ${sanitizedData.targetCountry}</p>
+                <p><strong>Visa Type:</strong> ${sanitizedData.visaType}</p>
+                <p><strong>Phone:</strong> ${sanitizedData.phone}</p>
+                ${sanitizedData.message ? `<p><strong>Message:</strong> ${sanitizedData.message}</p>` : ''}
               </div>
 
               <p>In the meantime, you can:</p>

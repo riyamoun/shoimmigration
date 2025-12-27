@@ -35,6 +35,15 @@ export async function PATCH(
       );
     }
 
+    // Check if lead exists first
+    const existingLead = await prisma.lead.findUnique({ where: { id } });
+    if (!existingLead) {
+      return NextResponse.json(
+        { error: "Lead not found" },
+        { status: 404 }
+      );
+    }
+
     const lead = await prisma.lead.update({
       where: { id },
       data: { status },
@@ -72,6 +81,15 @@ export async function DELETE(
     }
 
     const { id } = await params;
+
+    // Check if lead exists first
+    const existingLead = await prisma.lead.findUnique({ where: { id } });
+    if (!existingLead) {
+      return NextResponse.json(
+        { error: "Lead not found" },
+        { status: 404 }
+      );
+    }
 
     await prisma.lead.delete({
       where: { id },

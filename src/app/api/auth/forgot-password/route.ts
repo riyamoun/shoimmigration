@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { randomBytes } from "crypto";
+import { randomBytes, createHash } from "crypto";
 import prisma from "@/lib/prisma";
 import { forgotPasswordSchema } from "@/lib/validations";
 import { Resend } from "resend";
@@ -7,6 +7,11 @@ import { Resend } from "resend";
 const resend = process.env.RESEND_API_KEY 
   ? new Resend(process.env.RESEND_API_KEY)
   : null;
+
+// Hash the reset token before storing (like passwords)
+function hashToken(token: string): string {
+  return createHash("sha256").update(token).digest("hex");
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -36,20 +41,22 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Generate reset token
+    // Generate reset token (this is sent to user)
     const resetToken = randomBytes(32).toString("hex");
+    // Hash the token before storing in database
+    const hashedToken = hashToken(resetToken);
     const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour
 
-    // Save token to database
+    // Save HASHED token to database
     await prisma.user.update({
       where: { id: user.id },
       data: {
-        resetToken,
+        resetToken: hashedToken,
         resetTokenExpiry,
       },
     });
 
-    // Send email
+    // Send email with UNHASHED token
     if (resend) {
       const resetUrl = `${process.env.NEXTAUTH_URL}/reset-password?token=${resetToken}`;
       

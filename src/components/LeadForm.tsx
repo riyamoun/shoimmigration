@@ -5,13 +5,19 @@ import { Send, Phone, Mail, MapPin } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-const LeadForm = () => {
+interface LeadFormProps {
+  country?: string;
+  visaType?: string;
+  compact?: boolean;
+}
+
+const LeadForm = ({ country, visaType, compact = false }: LeadFormProps) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
-    targetCountry: '',
-    visaType: '',
+    targetCountry: country || '',
+    visaType: visaType || '',
     message: '',
   });
   const [loading, setLoading] = useState(false);
@@ -46,8 +52,8 @@ const LeadForm = () => {
         name: '',
         email: '',
         phone: '',
-        targetCountry: '',
-        visaType: '',
+        targetCountry: country || '',
+        visaType: visaType || '',
         message: '',
       });
     } catch (error) {
@@ -57,6 +63,93 @@ const LeadForm = () => {
       setLoading(false);
     }
   };
+
+  // Compact form for visa detail pages
+  if (compact) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100"
+      >
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+              <input
+                type="text"
+                required
+                value={formData.name}
+                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 outline-none transition"
+                placeholder="Your full name"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+              <input
+                type="email"
+                required
+                value={formData.email}
+                onChange={(e) => setFormData({...formData, email: e.target.value})}
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 outline-none transition"
+                placeholder="your@email.com"
+              />
+            </div>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Phone *</label>
+              <input
+                type="tel"
+                required
+                value={formData.phone}
+                onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 outline-none transition"
+                placeholder="+1 234 567 8900"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Visa Type</label>
+              <input
+                type="text"
+                readOnly
+                value={formData.visaType}
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-700"
+              />
+            </div>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Your Message</label>
+            <textarea
+              rows={3}
+              value={formData.message}
+              onChange={(e) => setFormData({...formData, message: e.target.value})}
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 outline-none transition resize-none"
+              placeholder="Tell us about your situation..."
+            />
+          </div>
+          
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-4 bg-gradient-to-r from-red-600 to-red-700 text-white font-semibold rounded-lg hover:from-red-700 hover:to-red-800 transition flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            {loading ? (
+              <>Processing...</>
+            ) : (
+              <>
+                <Send size={18} />
+                Get Free Consultation
+              </>
+            )}
+          </button>
+        </form>
+      </motion.div>
+    );
+  }
 
   return (
     <section id="contact" className="py-24 bg-slate-50">
@@ -198,7 +291,7 @@ const LeadForm = () => {
                       <option value="Canada">Canada</option>
                       <option value="United Kingdom">United Kingdom</option>
                       <option value="United States">United States</option>
-                      <option value="newzealand">New Zealand</option>
+                      <option value="New Zealand">New Zealand</option>
                     </select>
                   </div>
                   <div>
